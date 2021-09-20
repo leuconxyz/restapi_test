@@ -1,0 +1,1 @@
+mvn io.quarkus:quarkus-maven-plugin:1.13.7.Final:create -DprojectGroupId=org.acme -DprojectArtifactId=rest-json-quickstart -DclassName="org.acme.rest.json.FruitResource" -Dpath="/fruits" -Dextensions="resteasy,resteasy-jackson" cd rest-json-quickstart
