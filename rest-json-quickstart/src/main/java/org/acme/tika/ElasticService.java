@@ -23,7 +23,7 @@ public class ElasticService {
     public void index(OcrDocument eFile) throws IOException {
         Request request = new Request(
                 "PUT",
-                "/files/_doc/" + eFile.getId()); 
+                "/files/_doc/" + eFile.getSha()); 
         request.setJsonEntity(JsonObject.mapFrom(eFile).toString()); 
         restClient.performRequest(request); 
     }

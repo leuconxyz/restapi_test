@@ -6,26 +6,28 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.acme.serializer.*;
 
 public class OcrDocument {
-    private BigInteger id;
+    private BigInteger sha;
     private String name;
     private String text;
     private Map<String, String> metadata;
-    @JsonIgnore
+    @JsonDeserialize(using = IndiLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = IndiLocalDateTimeSerializer.class)
     private LocalDateTime indexDate;
     private String indexAuthor;
     private String uploadedFrom;
     
-    @JsonIgnore
 	public OcrDocument() {
 		super();
 	}
     
-    @JsonIgnore
-	public OcrDocument(BigInteger id, String name, String text, Map<String, String> metadata, LocalDateTime indexDate, String indexAuthor, String uploadedFrom) {
+    public OcrDocument(BigInteger dhs, String name, String text, Map<String, String> metadata, LocalDateTime indexDate, String indexAuthor, String uploadedFrom) {
 		super();
-		this.id = id;
+		this.sha = sha;
 		this.name = name;
 		this.text = text;
 		this.metadata = metadata;
@@ -34,9 +36,9 @@ public class OcrDocument {
 		this.uploadedFrom = uploadedFrom;
 	}
 	
-	public OcrDocument(BigInteger id, String name, String text, Map<String, String> metadata, String indexAuthor, String uploadedFrom) {
+	public OcrDocument(BigInteger sha, String name, String text, Map<String, String> metadata, String indexAuthor, String uploadedFrom) {
 		super();
-		this.id = id;
+		this.sha = sha;
 		this.name = name;
 		this.text = text;
 		this.metadata = metadata;
@@ -44,12 +46,12 @@ public class OcrDocument {
 		this.uploadedFrom = uploadedFrom;
 	}
 
-	public BigInteger getId() {
-		return id;
+	public BigInteger getSha() {
+		return sha;
 	}
 
-	public void setId(BigInteger id) {
-		this.id = id;
+	public void setSha(BigInteger sha) {
+		this.sha = sha;
 	}
 
 	public String getName() {
@@ -76,7 +78,6 @@ public class OcrDocument {
 		this.indexDate = indexDate;
 	}
 	
-	@JsonIgnore
 	public void setIndexDate(String indexDate) {
 		this.indexDate = LocalDateTime.parse(indexDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}

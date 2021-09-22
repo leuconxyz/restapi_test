@@ -23,7 +23,7 @@ public class TikaResource {
     public Response index(OcrDocument eFile) throws IOException {
         
         tikaService.index(eFile);
-        return Response.created(URI.create("/files/" + eFile.getId())).build();
+        return Response.created(URI.create("/files/" + eFile.getSha())).build();
     }
 
     @GET

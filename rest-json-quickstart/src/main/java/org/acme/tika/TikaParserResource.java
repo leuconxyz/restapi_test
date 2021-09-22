@@ -43,7 +43,7 @@ public class TikaParserResource {
     
     @GET
     @Path("/{id}")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response get(@PathParam("id") String id) throws IOException {
         OcrDocument occ = elasticService.get(id);
         return Response.ok(occ).build();
