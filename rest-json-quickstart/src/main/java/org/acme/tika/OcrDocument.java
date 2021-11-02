@@ -1,17 +1,15 @@
 package org.acme.tika;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.acme.serializer.*;
 
 public class OcrDocument {
-    private BigInteger sha;
+    private String sha;
     private String name;
     private String text;
     private Map<String, String> metadata;
@@ -25,7 +23,7 @@ public class OcrDocument {
 		super();
 	}
     
-    public OcrDocument(BigInteger dhs, String name, String text, Map<String, String> metadata, LocalDateTime indexDate, String indexAuthor, String uploadedFrom) {
+    public OcrDocument(String sha, String name, String text, Map<String, String> metadata, LocalDateTime indexDate, String indexAuthor, String uploadedFrom) {
 		super();
 		this.sha = sha;
 		this.name = name;
@@ -36,7 +34,7 @@ public class OcrDocument {
 		this.uploadedFrom = uploadedFrom;
 	}
 	
-	public OcrDocument(BigInteger sha, String name, String text, Map<String, String> metadata, String indexAuthor, String uploadedFrom) {
+	public OcrDocument(String sha, String name, String text, Map<String, String> metadata, String indexAuthor, String uploadedFrom) {
 		super();
 		this.sha = sha;
 		this.name = name;
@@ -46,11 +44,11 @@ public class OcrDocument {
 		this.uploadedFrom = uploadedFrom;
 	}
 
-	public BigInteger getSha() {
+	public String getSha() {
 		return sha;
 	}
 
-	public void setSha(BigInteger sha) {
+	public void setSha(String sha) {
 		this.sha = sha;
 	}
 
@@ -76,10 +74,6 @@ public class OcrDocument {
 
 	public void setIndexDate(LocalDateTime indexDate) {
 		this.indexDate = indexDate;
-	}
-	
-	public void setIndexDate(String indexDate) {
-		this.indexDate = LocalDateTime.parse(indexDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
 
 	public Map<String, String> getMetadata() {

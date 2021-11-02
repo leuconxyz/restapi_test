@@ -60,10 +60,7 @@ public class TikaParserResource {
     public String extractText(InputStream stream) throws IOException, NoSuchAlgorithmException {
         Instant start = Instant.now();
         byte[] bytes = IOUtils.toByteArray(stream);
-        
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] sha256Hash = digest.digest(bytes);
-        BigInteger shaInt = new BigInteger(sha256Hash);
+        String shaInt = org.apache.commons.codec.digest.DigestUtils.sha256Hex(bytes);
 
         stream = new ByteArrayInputStream(bytes);
         TikaContent tcont = parser.parse(stream);
