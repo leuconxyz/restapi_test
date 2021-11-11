@@ -20,7 +20,7 @@ public class ElasticService {
     @Inject
     RestClient restClient; 
 
-    public void index(OcrDocument eFile) throws IOException {
+    public void index(OcrDocumentRaw eFile) throws IOException {
         Request request = new Request(
                 "PUT",
                 "/files/_doc/" + eFile.getSha()); 
@@ -28,14 +28,14 @@ public class ElasticService {
         restClient.performRequest(request); 
     }
 
-    public OcrDocument get(String id) throws IOException {
+    public OcrDocumentRaw get(String id) throws IOException {
         Request request = new Request(
                 "GET",
                 "/files/_doc/" + id);
         Response response = restClient.performRequest(request);
         String responseBody = EntityUtils.toString(response.getEntity());
         JsonObject json = new JsonObject(responseBody); 
-        return json.getJsonObject("_source").mapTo(OcrDocument.class);
+        return json.getJsonObject("_source").mapTo(OcrDocumentRaw.class);
     }
 
     public List<OcrDocument> searchByText(String text) throws IOException {
@@ -53,7 +53,11 @@ public class ElasticService {
         //construct a JSON query like {"query": {"match": {"<term>": "<match"}}
         JsonObject termJson = new JsonObject().put(term, match);
         JsonObject matchJson = new JsonObject().put("match", termJson);
-        JsonObject queryJson = new JsonObject().put("query", matchJson);
+        JsonObject textJson = new JsonObject().put("text", new JsonObject());
+        JsonObject fieldsJson = new JsonObject().put("fields", textJson).put("pre_tags",  "<b>").put("post_tags", "</b>");
+        //JsonObject highlightJson = new JsonObject().put("highlight", fieldsJson);
+        
+        JsonObject queryJson = new JsonObject().put("query", matchJson).put("highlight", fieldsJson);
         request.setJsonEntity(queryJson.encode());
         Response response = restClient.performRequest(request);
         String responseBody = EntityUtils.toString(response.getEntity());
@@ -63,7 +67,9 @@ public class ElasticService {
         List<OcrDocument> results = new ArrayList<>(hits.size());
         for (int i = 0; i < hits.size(); i++) {
             JsonObject hit = hits.getJsonObject(i);
-            OcrDocument eFile = hit.getJsonObject("_source").mapTo(OcrDocument.class);
+            OcrDocument eFile = new OcrDocument();
+            eFile.setHighlight(hit.getJsonObject("highlight").mapTo(OcrDocumentHighlighted.class));
+            eFile.set_source(hit.getJsonObject("_source").mapTo(OcrDocumentRaw.class));
             results.add(eFile);
         }
         return results;

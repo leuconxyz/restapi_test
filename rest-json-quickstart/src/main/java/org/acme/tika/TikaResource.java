@@ -20,7 +20,7 @@ public class TikaResource {
     ElasticService tikaService;
 
     @POST
-    public Response index(OcrDocument eFile) throws IOException {
+    public Response index(OcrDocumentRaw eFile) throws IOException {
         
         tikaService.index(eFile);
         return Response.created(URI.create("/files/" + eFile.getSha())).build();
@@ -28,7 +28,7 @@ public class TikaResource {
 
     @GET
     @Path("/{id}")
-    public OcrDocument get(@PathParam("id") String id) throws IOException {
+    public OcrDocumentRaw get(@PathParam("id") String id) throws IOException {
         return tikaService.get(id);
     }
 

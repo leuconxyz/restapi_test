@@ -45,7 +45,7 @@ public class TikaParserResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@PathParam("id") String id) throws IOException {
-        OcrDocument occ = elasticService.get(id);
+        OcrDocumentRaw occ = elasticService.get(id);
         return Response.ok(occ).build();
     }
 
@@ -72,7 +72,7 @@ public class TikaParserResource {
         	extractMetadata.put(name, String.join(",", tcont.getMetadata().getValues(name)));
         }
         
-        OcrDocument ocrDocument = new OcrDocument(shaInt, null, tcont.getText(),extractMetadata, LocalDateTime.now(), null, null);
+        OcrDocumentRaw ocrDocument = new OcrDocumentRaw(shaInt, null, tcont.getText(),extractMetadata, LocalDateTime.now(), null, null);
         log.info(ocrDocument);
         elasticService.index(ocrDocument);
 
