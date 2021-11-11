@@ -25,8 +25,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.acme.elasticsearch.Fruit;
+import org.acme.rest.client.multipart.MultipartBody;
 import org.apache.commons.io.IOUtils;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import io.quarkus.tika.TikaContent;
 import io.quarkus.tika.TikaParser;
@@ -51,19 +53,20 @@ public class TikaParserResource {
 
     @POST
     @Path("/text")
-    @Consumes({ "application/pdf", "application/vnd.oasis.opendocument.text",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "text/plain", "text/csv",
-            "application/json", "text/yaml", "application/xml", "application/msword", "application/vnd.ms-excel", "application/vnd.ms-powerpoint" })
+//    @Consumes({ "application/pdf", "application/vnd.oasis.opendocument.text",
+//            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+//            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+//            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "text/plain", "text/csv",
+//            "application/json", "text/yaml", "application/xml", "application/msword", "application/vnd.ms-excel", "application/vnd.ms-powerpoint" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_PLAIN)
-    public String extractText(InputStream stream) throws IOException, NoSuchAlgorithmException {
+    public String extractText(@MultipartForm MultipartBody data) throws IOException, NoSuchAlgorithmException {
         Instant start = Instant.now();
-        byte[] bytes = IOUtils.toByteArray(stream);
+        byte[] bytes = IOUtils.toByteArray(data.file);
         String shaInt = org.apache.commons.codec.digest.DigestUtils.sha256Hex(bytes);
 
-        stream = new ByteArrayInputStream(bytes);
-        TikaContent tcont = parser.parse(stream);
+        data.file = new ByteArrayInputStream(bytes);
+        TikaContent tcont = parser.parse(data.file);
         
         Map<String, String> extractMetadata = new HashMap<String, String>();
 
@@ -72,7 +75,7 @@ public class TikaParserResource {
         	extractMetadata.put(name, String.join(",", tcont.getMetadata().getValues(name)));
         }
         
-        OcrDocumentRaw ocrDocument = new OcrDocumentRaw(shaInt, null, tcont.getText(),extractMetadata, LocalDateTime.now(), null, null);
+        OcrDocumentRaw ocrDocument = new OcrDocumentRaw(shaInt, data.fileName, tcont.getText(),extractMetadata, LocalDateTime.now(), null, null);
         log.info(ocrDocument);
         elasticService.index(ocrDocument);
 
