@@ -43,5 +43,11 @@ public class TikaResource {
             throw new BadRequestException("Should provide name or text query parameter");
         }
     }
+    
+    @GET
+    @Path("/searchLatest")
+    public List<OcrDocument> search() throws IOException {
+            return tikaService.searchLatest();
+    }
 
 }

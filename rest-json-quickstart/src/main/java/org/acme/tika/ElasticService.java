@@ -74,4 +74,39 @@ public class ElasticService {
         }
         return results;
     }
+    
+    public List<OcrDocument> searchLatest() throws IOException {
+        Request request = new Request(
+                "GET",
+                "/files/_search");
+        
+        String JsonRequest = "{\r\n" + 
+        		"  \"query\": {\r\n" + 
+        		"    \"match_all\": {}\r\n" + 
+        		"  },\r\n" + 
+        		"  \"size\": 1,\r\n" + 
+        		"  \"sort\": [\r\n" + 
+        		"    {\r\n" + 
+        		"      \"indexDate\": {\r\n" + 
+        		"        \"order\": \"desc\"\r\n" + 
+        		"      }\r\n" + 
+        		"    }\r\n" + 
+        		"  ]\r\n" + 
+        		"}";
+        
+        request.setJsonEntity(JsonRequest);
+        Response response = restClient.performRequest(request);
+        String responseBody = EntityUtils.toString(response.getEntity());
+
+        JsonObject json = new JsonObject(responseBody);
+        JsonArray hits = json.getJsonObject("hits").getJsonArray("hits");
+        List<OcrDocument> results = new ArrayList<>(hits.size());
+        for (int i = 0; i < hits.size(); i++) {
+            JsonObject hit = hits.getJsonObject(i);
+            OcrDocument eFile = new OcrDocument();
+            eFile.set_source(hit.getJsonObject("_source").mapTo(OcrDocumentRaw.class));
+            results.add(eFile);
+        }
+        return results;
+    }
 }
