@@ -84,7 +84,7 @@ public class ElasticService {
         		"  \"query\": {\r\n" + 
         		"    \"match_all\": {}\r\n" + 
         		"  },\r\n" + 
-        		"  \"size\": 1,\r\n" + 
+        		"  \"size\": 10,\r\n" + 
         		"  \"sort\": [\r\n" + 
         		"    {\r\n" + 
         		"      \"indexDate\": {\r\n" + 
